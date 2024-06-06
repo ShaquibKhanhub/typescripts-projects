@@ -44,13 +44,14 @@ const generateTodoItem = (title: string, isCompleted: boolean, id: string) => {
   checkBox.type = "checkbox";
   checkBox.className = "isCompleted";
   checkBox.checked = isCompleted;
-  console.log(  checkBox.checked);
+  console.log(checkBox.checked);
   checkBox.onchange = () => {
     todos.find((item) => {
       item.id === id ? (item.isCompleted = checkBox.checked) : "";
-
     });
-    paragraph.className= checkBox.checked?'textCut':''
+    // console.log('checkbox',checkBox.checked);
+    // console.log('iscomplete',isCompleted);
+    paragraph.className = checkBox.checked ? "textCut" : "";
     saveTodosToLocalStorage();
   };
 
@@ -86,7 +87,6 @@ const deleteTodo = (id: string) => {
   saveTodosToLocalStorage();
   renderTodos(todos);
 };
-
 
 // Initial render
 renderTodos(todos);
