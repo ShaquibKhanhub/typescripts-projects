@@ -8,8 +8,10 @@ import {
   RadioGroup,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { saveResult } from "../redux/slices";
 
 const Quiz = () => {
   const [result, setResult] = useState<string[]>([]);
@@ -18,13 +20,21 @@ const Quiz = () => {
 
   const [ans, setAns] = useState<string>("");
 
+  const { words } = useSelector((state: { root: StateType }) => state.root);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleNext = (): void => {
     setResult((prev) => [...prev, ans]);
     setCount((prev) => prev + 1);
     setAns("");
   };
 
+  useEffect(() => {
+    if(count+1>words.length) navigate('/result')
+    dispatch(saveResult(result));
+  }, [result]);
   return (
     <Container
       maxWidth="sm"
@@ -34,7 +44,7 @@ const Quiz = () => {
     >
       <Typography m={"2rem 0"}>Quiz</Typography>
       <Typography variant="h3">
-        {count + 1} - {"Randoms"}
+        {count + 1} - {words[count]?.word}
       </Typography>
       <FormControl>
         <FormLabel
@@ -46,11 +56,14 @@ const Quiz = () => {
           Meaning
         </FormLabel>
         <RadioGroup value={ans} onChange={(e) => setAns(e.target.value)}>
-          <FormControlLabel
-            value={"Lol"}
-            control={<Radio />}
-            label={"Option 1"}
-          />
+          {words[count]?.options.map((i, ind) => (
+            <FormControlLabel
+              value={i}
+              control={<Radio />}
+              label={i}
+              key={ind}
+            />
+          ))}
         </RadioGroup>
       </FormControl>
       <Button
@@ -62,7 +75,7 @@ const Quiz = () => {
         onClick={handleNext}
         disabled={ans === ""}
       >
-        {count === 7 ? "Submit" : "Next"}
+        {count === words.length - 1 ? "Submit" : "Next"}
       </Button>
     </Container>
   );
